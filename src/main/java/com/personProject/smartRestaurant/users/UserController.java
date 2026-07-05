@@ -1,6 +1,7 @@
 package com.personProject.smartRestaurant.users;
 
 import com.personProject.smartRestaurant.entities.User;
+import com.personProject.smartRestaurant.users.dto.LoginRequest;
 import com.personProject.smartRestaurant.users.dto.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,12 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest request) {
+        UserResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
