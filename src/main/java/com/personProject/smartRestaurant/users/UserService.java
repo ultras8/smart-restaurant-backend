@@ -1,8 +1,11 @@
 package com.personProject.smartRestaurant.users;
 
 import com.personProject.smartRestaurant.entities.User;
+import com.personProject.smartRestaurant.users.dto.LoginRequest;
 import com.personProject.smartRestaurant.users.dto.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,12 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtService jwtService;
+
     public UserResponse createUser(User user) {
         if(userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("ชื่อผู้ใช้งานนี้มีในระบบแล้ว");
@@ -34,6 +43,27 @@ public class UserService {
         response.setId(savedUser.getId());
         response.setUsername(savedUser.getUsername());
         response.setEmail(savedUser.getEmail());
+        return response;
+    }
+
+    public UserResponse login(LoginRequest request) {
+        User user = userRepository.findByUsernameOrEmail(request.getUsername(), request.getUsername())
+                .orElseThrow(() -> new RuntimeException("ไม่พบชื่อผู้ใช้งานหรืออีเมลนี้ในระบบค่ะ"));
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        user.getUsername(),
+                        request.getPassword()
+                )
+        );
+
+        String token = jwtService.generateToken(user);
+
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setUsername(user.getUsername());
+        response.setEmail(user.getEmail());
+        response.setToken(token);
         return response;
     }
 

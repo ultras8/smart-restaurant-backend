@@ -25,7 +25,7 @@ public class Stock {
 
     private BigDecimal cost;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 

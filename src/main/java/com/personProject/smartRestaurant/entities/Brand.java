@@ -22,7 +22,7 @@ public class Brand {
     @Column(nullable = false)
     private RestaurantTypeEnums type;
 
-    @ManyToMany()
+    @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
