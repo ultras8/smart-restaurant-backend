@@ -1,8 +1,10 @@
 package com.personProject.smartRestaurant.entities;
 
+import com.personProject.smartRestaurant.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -18,12 +20,6 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // คืนค่าสิทธิ์ (Role) ของผู้ใช้งาน
-        return List.of();
-    }
-
     @Column(unique = true, nullable = false)
     private String username;
 
@@ -37,6 +33,14 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private UserRole role = UserRole.OWNER;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
+    }
 
     @Override
     public String getPassword() {
@@ -63,6 +67,11 @@ public class User implements UserDetails {
         return true; // บัญชีเปิดใช้งานอยู่
     }
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Employee employee;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Brand> brands;
+
+
 }
