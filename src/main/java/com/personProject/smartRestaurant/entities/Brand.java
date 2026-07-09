@@ -4,6 +4,7 @@ import com.personProject.smartRestaurant.enums.RestaurantTypeEnums;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -25,5 +26,8 @@ public class Brand {
     @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Employee> employees;
 
 }
